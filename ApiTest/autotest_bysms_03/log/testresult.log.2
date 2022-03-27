@@ -1,0 +1,126 @@
+
+
+  ========= 测试开始 : 20220112_234335 =========
+
+
+
+>>> cases\数据环境-空白\
+
+[ suite setup ] cases\数据环境-空白\
+删除客户、药品、订单
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:43:36 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 10
+Vary: Cookie
+Set-Cookie: sessionid=m2koffx6uzhl7gxj6c8gzfk20eo73sjg; expires=Wed, 26 Jan 2022 15:43:36 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax
+
+{"ret": 0}
+-------- HTTP response * end -------
+
+
+列出订单
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:43:36 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 37
+Vary: Cookie
+
+{"ret": 0, "retlist": [], "total": 0}
+-------- HTTP response * end -------
+
+
+列出客户
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:43:36 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 37
+Vary: Cookie
+
+{"ret": 0, "retlist": [], "total": 0}
+-------- HTTP response * end -------
+
+
+列出药品
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:43:36 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 37
+Vary: Cookie
+
+{"ret": 0, "retlist": [], "total": 0}
+-------- HTTP response * end -------
+
+
+
+
+>>> cases\数据环境-空白\药品\添加药品.py
+
+* 添加药品 - API-0155  -  2022-01-12 23:43:36
+
+  [ case execution steps ]
+
+-- 第 1 步 -- 添加一个药品 
+
+添加药品
+  ABORT   'YPAPIMgr' object has no attribute 's' 
+Traceback:
+  File "cases\数据环境-空白\药品\添加药品.py", line 17, in teststeps
+    r = ypapimgr.drug_add('青霉素',
+  File "C:\Users\86150\Desktop\autotest_bysms_03\autotest_bysms_03\lib\ypapi.py", line 49, in drug_add
+    response = self.s.post("http://127.0.0.1/api/mgr/medicines",
+AttributeError: 'YPAPIMgr' object has no attribute 's'
+
+
+[ case teardown ] 添加药品 - API-0155
+case teardown fail | 'c6' object has no attribute 'addedCustomerId' 
+Traceback:
+  File "cases\数据环境-空白\药品\添加药品.py", line 12, in teardown
+    ypapimgr.drug_del(self.addedCustomerId)
+AttributeError: 'c6' object has no attribute 'addedCustomerId'
+
+
+
+  ========= 测试结束 : 20220112_234342 =========
+
+
+  耗时    : 6.613 秒
+
+
+  预备执行用例数量 : 1
+
+  实际执行用例数量 : 1
+
+  通过 : 0
+
+  失败 : 0
+
+  异常 : 1
+
+  套件初始化失败 : 0
+
+  套件清除  失败 : 0
+
+  用例初始化失败 : 0
+
+  用例清除  失败 : 1

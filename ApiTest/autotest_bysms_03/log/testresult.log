@@ -1,0 +1,185 @@
+
+
+  ========= 测试开始 : 20220112_234520 =========
+
+
+
+>>> cases\数据环境-空白\
+
+[ suite setup ] cases\数据环境-空白\
+删除客户、药品、订单
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:45:20 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 10
+Vary: Cookie
+Set-Cookie: sessionid=47c19hy4s795wbr9lwy0qe0o5q0m7xnf; expires=Wed, 26 Jan 2022 15:45:20 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax
+
+{"ret": 0}
+-------- HTTP response * end -------
+
+
+列出订单
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:45:20 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 37
+Vary: Cookie
+
+{"ret": 0, "retlist": [], "total": 0}
+-------- HTTP response * end -------
+
+
+列出客户
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:45:20 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 37
+Vary: Cookie
+
+{"ret": 0, "retlist": [], "total": 0}
+-------- HTTP response * end -------
+
+
+列出药品
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:45:20 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 37
+Vary: Cookie
+
+{"ret": 0, "retlist": [], "total": 0}
+-------- HTTP response * end -------
+
+
+
+
+>>> cases\数据环境-空白\药品\添加药品.py
+
+* 添加药品 - API-0155  -  2022-01-12 23:45:20
+
+  [ case execution steps ]
+
+-- 第 1 步 -- 添加一个药品 
+
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:45:21 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 10
+Vary: Cookie
+Set-Cookie: sessionid=d0k5znhcqd2apx4ogxcw673iaf48of07; expires=Wed, 26 Jan 2022 15:45:21 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax
+
+{"ret": 0}
+-------- HTTP response * end -------
+
+
+添加药品
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:45:21 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 20
+Vary: Cookie
+
+{"ret": 0, "id": 34}
+-------- HTTP response * end -------
+
+
+
+** 检查点 **  返回的ret值=0 ---->  通过
+
+
+-- 第 2 步 -- 检查系统数据 
+
+列出药品
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:45:21 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 111
+Vary: Cookie
+
+{"ret": 0, "retlist": [{"id": 34, "name": "青霉素", "sn": "234324234234", "desc": "青霉素"}], "total": 1}
+-------- HTTP response * end -------
+
+
+
+** 检查点 **  返回的消息体数据正确 ---->  通过
+
+  PASS 
+
+[ case teardown ] 添加药品 - API-0155
+删除药品
+
+
+-------- HTTP response * begin -------
+200
+Date: Wed, 12 Jan 2022 15:45:21 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 10
+Vary: Cookie
+
+{"ret": 0}
+-------- HTTP response * end -------
+
+
+
+
+  ========= 测试结束 : 20220112_234521 =========
+
+
+  耗时    : 0.552 秒
+
+
+  预备执行用例数量 : 1
+
+  实际执行用例数量 : 1
+
+  通过 : 1
+
+  失败 : 0
+
+  异常 : 0
+
+  套件初始化失败 : 0
+
+  套件清除  失败 : 0
+
+  用例初始化失败 : 0
+
+  用例清除  失败 : 0

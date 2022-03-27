@@ -1,0 +1,2745 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>测试报告</title>
+    <meta charset="UTF-8">
+    <style>body {    
+    font-family: consolas, Verdana, sans-serif;
+    font-size: .92em;
+    color: #696e71;
+}
+
+.main_section {   
+    width: 90%;
+    margin: 0 auto;
+}
+
+#float_menu{    
+    position:fixed;
+    top:0;
+    right:0;
+    text-align: center;
+}
+
+#float_menu .menu-item {       
+    cursor: pointer;
+    padding: .5em;
+    margin: .5em 0;
+    color: #c08580;
+    background-color: #f8f0ef;
+    font-size: 1.2em;
+}
+
+
+
+.result{  
+    display: flex;
+}
+  
+  
+.result_table{
+    border-collapse: collapse;
+    border: 1px solid #f0e0e5;
+    width: 30em;
+    text-align: center;
+    font-size: 1.0em;
+}
+      
+.result_table td{
+    border: 1px solid #f0e0e5;
+    padding: .3em;
+}
+  
+.result_barchart{  
+    width: 30em;
+    margin: 0 5em 0 5em;
+}
+  
+.barchar_item{
+    margin: 2em 0;
+}
+  
+.barchart_barbox {
+    margin: 0.5em 0;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #86c2dd;
+    border-radius: .2em;
+}
+  
+.barchart_bar {
+    text-align: right;
+    color: white;
+}
+  
+  
+
+
+
+.h3_button {
+    margin: 1.5em;
+    cursor: pointer;
+    color: #03a9f4;
+}
+
+
+.info
+{
+    white-space:pre-wrap;
+    padding: .6em;
+}
+
+
+.error-info
+{
+    color: #a64747
+}
+
+.suite_dir {
+    margin: 1em .2em;
+    padding: .3em;
+    /* background-color: #dfeff6; */
+    border: 1px solid #bcd8e4;
+}
+.suite_file {
+    margin: 1em .2em;
+    padding: .3em;
+    border: 1px solid #bcd8e4;
+}
+
+
+.case {
+    margin: 1em .2em;
+    /* padding: .3em; */
+    border: 1px solid #e7d4d4;
+}
+
+.case_class_path{
+    margin: 0em 1em; 
+}
+
+
+.folder_header { 
+    padding: .2em .7em;
+    background-color: #fffaf9;
+    cursor: pointer;
+}
+
+
+.setup{
+    margin: .2em;
+    /* padding: .3em; */
+    /* border: 1px solid #e7d4d4; */
+}
+.teardown{
+    margin: .2em;
+    /* padding: .3em;*/
+    /* border: 1px solid #e7d4d4; */
+}
+.test_steps{
+    margin: .2em;
+    padding: .3em;
+    /* border: 1px solid #e7d4d4; */
+}
+
+
+.label {
+    display: inline-block;
+    padding: .1em .5em;
+    font-size: .88em;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    color: #0d6ebc;
+    border-radius: .2em;
+    min-width: 5em;    
+    margin-right: 2em;
+    font-family: consolas;
+}
+
+/* .suite_setup .label{
+    color: #219e26 ;
+}
+.suite_teardown .label{
+    color: #219e26;
+} */
+
+
+/* .case.pass   .casename{
+    color: #329132 ;
+} */
+.case.pass   .caselabel{
+    color: white;
+    background-color: #3b9e3f;
+}
+/* .case.fail   .casename{
+    color: #a64747;
+} */
+.case.fail   .caselabel{
+    color: white;
+    background-color: #a64747;
+}
+/* .case.abort   .casename{
+    color: #953ab7;
+} */
+.case.abort   .caselabel{
+    color: white;
+    background-color: #9c27b0;
+}
+
+
+
+.case_step  {
+    margin: .8em;
+}
+.checkpoint_pass {
+    margin: .8em;
+}
+.checkpoint_fail {
+    margin: .8em;
+}
+
+.case_step  .tag{
+    color: #2196f3;;
+    margin: .3em 1em .3em 0;
+    padding: .1em .3em;
+    font-size: .92em;
+}
+
+.checkpoint_pass .tag{
+    color: #009806;
+    margin:.3em 1em .3em .5em;
+    padding: .1em .3em;
+    font-size: .92em;
+}
+.checkpoint_fail .tag{
+    color: #9c2020;
+    margin:.3em 1em .3em .5em;
+    padding: .1em .3em;
+    font-size: .92em;
+}
+
+.screenshot {
+    border: 1px solid #86c2dd;
+}
+
+.executetime {
+    float: right;
+}</style>
+    <script type="text/javascript">var FOLDER_ALL_CASES = false //是否为精简模式的标记
+var ERROR_INFOS = [];  // 错误信息列表
+var current_error_idx = -1;
+
+// 页面加载后执行的函数
+window.addEventListener("load", function(){
+    // 所有 .folder_header 添加点击事件处理
+    let folderHeaderEles = document.querySelectorAll(".folder_header");
+    folderHeaderEles.forEach(function(ele) {
+        ele.addEventListener("click", function(event) {
+        let fb = event.target.closest('.folder_header').nextElementSibling;
+        fb.style.display = fb.style.display === 'none' ? 'block' : 'none'
+        });
+    });
+
+    // 找到所有的错误信息对象
+    ERROR_INFOS = document.querySelectorAll(".error-info");
+});
+
+
+
+function toggle_folder_all_cases(){
+    let eles = document.querySelectorAll(".folder_body");
+    
+    FOLDER_ALL_CASES = !FOLDER_ALL_CASES;
+    document.getElementById('display_mode').innerHTML = FOLDER_ALL_CASES? "详细" : "精简"
+
+    for (const ele of eles){
+        ele.style.display =  FOLDER_ALL_CASES? "none": "block"
+    }
+    
+}
+
+
+
+function previous_error(){
+    // 查找错误必须是详细模式
+    if (FOLDER_ALL_CASES)
+        toggle_folder_all_cases()
+
+    current_error_idx -= 1; 
+    if (current_error_idx<0)
+        current_error_idx = 0
+
+    
+    let error = ERROR_INFOS[current_error_idx];
+
+    error.scrollIntoView({behavior: "smooth", block: "center", inline: "start"});
+
+    
+}
+
+
+function next_error(){
+    
+    // 查找错误必须是详细模式
+    if (FOLDER_ALL_CASES)
+        toggle_folder_all_cases()
+
+    current_error_idx += 1;
+    if (current_error_idx > ERROR_INFOS.length-1)
+        current_error_idx = ERROR_INFOS.length-1
+
+    let error = ERROR_INFOS[current_error_idx];
+
+    error.scrollIntoView({behavior: "smooth", block: "center", inline: "start"});
+    
+}</script>
+  </head>
+  <body>
+    <div class="main_section">
+      <h1 style="font-family: auto">测试报告 - hytest v0.7.5</h1>
+      <h3>统计结果</h3>
+      <div class="result">
+        <table class="result_table">
+          <tbody>
+            <tr>
+              <td>开始时间</td>
+              <td>20220112 14:29:10</td>
+            </tr>
+            <tr>
+              <td>结束时间</td>
+              <td>20220112 14:29:10</td>
+            </tr>
+            <tr>
+              <td>耗时</td>
+              <td>0.362 秒</td>
+            </tr>
+            <tr>
+              <td>预备执行用例数量</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>实际执用例行数量</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>通过</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>失败</td>
+              <td style="color:red">1</td>
+            </tr>
+            <tr>
+              <td>异常</td>
+              <td style="">0</td>
+            </tr>
+            <tr>
+              <td>阻塞</td>
+              <td style="">0</td>
+            </tr>
+            <tr>
+              <td>套件初始化失败</td>
+              <td style="">0</td>
+            </tr>
+            <tr>
+              <td>套件清除失败</td>
+              <td style="">0</td>
+            </tr>
+            <tr>
+              <td>用例初始化失败</td>
+              <td style="">0</td>
+            </tr>
+            <tr>
+              <td>用例清除失败</td>
+              <td style="">0</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="result_barchart">
+          <div class="barchar_item">
+            <span>用例通过 0% ： 0 个</span>
+            <div class="barchart_barbox">
+              <div class="barchart_bar" style="width: 0.0%; background-color: #04AA6D;">0.0%</div>
+            </div>
+          </div>
+          <div class="barchar_item">
+            <span>用例失败 100% ： 1 个</span>
+            <div class="barchart_barbox">
+              <div class="barchart_bar" style="width: 100.0%; background-color: #bb4069;">100.0%</div>
+            </div>
+          </div>
+          <div class="barchar_item">
+            <span>用例异常 0% ： 0 个</span>
+            <div class="barchart_barbox">
+              <div class="barchart_bar" style="width: 0.0%; background-color: #9c27b0;">0.0%</div>
+            </div>
+          </div>
+          <div class="barchar_item">
+            <span>用例阻塞 0% ： 0 个</span>
+            <div class="barchart_barbox">
+              <div class="barchart_bar" style="width: 0.0%; background-color: #dcbdbd;">0.0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:2em">
+        <h3 style="display:inline">执行日志</h3>
+      </div>
+      <div class="exec_log">
+        <div class="suite_dir" id="suite_dir cases\数据环境-空白\">
+          <div>
+            <span class="label">进入目录</span>
+            <span>cases\数据环境-空白\</span>
+          </div>
+          <div class="suite_setup setup" id="suite_setup setup cases\数据环境-空白\">
+            <div class="folder_header">
+              <span class="label">套件初始化</span>
+              <span>cases\数据环境-空白\</span>
+              <span class="executetime">2022-01-12 14:29:10</span>
+            </div>
+            <div class="folder_body">
+              <div class="info">删除客户、药品、订单</div>
+              <div class="info">
+
+-------- HTTP response * begin -------</div>
+              <div class="info">200</div>
+              <div class="info">Date: Wed, 12 Jan 2022 06:29:10 GMT</div>
+              <div class="info">Server: WSGIServer/0.2 CPython/3.7.5</div>
+              <div class="info">Content-Type: application/json</div>
+              <div class="info">X-Frame-Options: SAMEORIGIN</div>
+              <div class="info">Content-Length: 10</div>
+              <div class="info">Vary: Cookie</div>
+              <div class="info">Set-Cookie: sessionid=pdk0ik49s1tedlosu0ayqp067c4i2u3h; expires=Wed, 26 Jan 2022 06:29:10 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax</div>
+              <div class="info"></div>
+              <div class="info">{&quot;ret&quot;: 0}</div>
+              <div class="info">-------- HTTP response * end -------
+
+</div>
+              <div class="info">列出订单</div>
+              <div class="info">
+
+-------- HTTP response * begin -------</div>
+              <div class="info">200</div>
+              <div class="info">Date: Wed, 12 Jan 2022 06:29:10 GMT</div>
+              <div class="info">Server: WSGIServer/0.2 CPython/3.7.5</div>
+              <div class="info">Content-Type: application/json</div>
+              <div class="info">X-Frame-Options: SAMEORIGIN</div>
+              <div class="info">Content-Length: 37</div>
+              <div class="info">Vary: Cookie</div>
+              <div class="info"></div>
+              <div class="info">{&quot;ret&quot;: 0, &quot;retlist&quot;: [], &quot;total&quot;: 0}</div>
+              <div class="info">-------- HTTP response * end -------
+
+</div>
+              <div class="info">列出客户</div>
+              <div class="info">
+
+-------- HTTP response * begin -------</div>
+              <div class="info">200</div>
+              <div class="info">Date: Wed, 12 Jan 2022 06:29:10 GMT</div>
+              <div class="info">Server: WSGIServer/0.2 CPython/3.7.5</div>
+              <div class="info">Content-Type: application/json</div>
+              <div class="info">X-Frame-Options: SAMEORIGIN</div>
+              <div class="info">Content-Length: 37</div>
+              <div class="info">Vary: Cookie</div>
+              <div class="info"></div>
+              <div class="info">{&quot;ret&quot;: 0, &quot;retlist&quot;: [], &quot;total&quot;: 0}</div>
+              <div class="info">-------- HTTP response * end -------
+
+</div>
+              <div class="info">列出药品</div>
+              <div class="info">
+
+-------- HTTP response * begin -------</div>
+              <div class="info">200</div>
+              <div class="info">Date: Wed, 12 Jan 2022 06:29:10 GMT</div>
+              <div class="info">Server: WSGIServer/0.2 CPython/3.7.5</div>
+              <div class="info">Content-Type: application/json</div>
+              <div class="info">X-Frame-Options: SAMEORIGIN</div>
+              <div class="info">Content-Length: 37</div>
+              <div class="info">Vary: Cookie</div>
+              <div class="info"></div>
+              <div class="info">{&quot;ret&quot;: 0, &quot;retlist&quot;: [], &quot;total&quot;: 0}</div>
+              <div class="info">-------- HTTP response * end -------
+
+</div>
+            </div>
+          </div>
+        </div>
+        <div class="suite_file" id="suite_file cases\数据环境-空白\客户API\修改客户.py">
+          <div>
+            <span class="label">进入文件</span>
+            <span>cases\数据环境-空白\客户API\修改客户.py</span>
+          </div>
+          <div class="case fail" id="case_00000001">
+            <div class="folder_header">
+              <span class="label caselabel">用例 FAIL</span>
+              <span class="casename">添加客户 - API-0154</span>
+              <span class="executetime">2022-01-12 14:29:10</span>
+            </div>
+            <div class="folder_body">
+              <span class="case_class_path">cases\数据环境-空白\客户API\修改客户.py::c4</span>
+              <div class="test_steps" id="test_steps 添加客户 - API-0154">
+                <span class="label">测试步骤</span>
+                <div class="case_step">
+                  <span class="tag">第 1 步</span>
+                  <span>添加一个客户</span>
+                </div>
+                <div class="info">添加客户</div>
+                <div class="info">
+
+-------- HTTP response * begin -------</div>
+                <div class="info">200</div>
+                <div class="info">Date: Wed, 12 Jan 2022 06:29:10 GMT</div>
+                <div class="info">Server: WSGIServer/0.2 CPython/3.7.5</div>
+                <div class="info">Content-Type: application/json</div>
+                <div class="info">X-Frame-Options: SAMEORIGIN</div>
+                <div class="info">Content-Length: 21</div>
+                <div class="info">Vary: Cookie</div>
+                <div class="info"></div>
+                <div class="info">{&quot;ret&quot;: 0, &quot;id&quot;: 158}</div>
+                <div class="info">-------- HTTP response * end -------
+
+</div>
+                <div class="checkpoint_pass">
+                  <span class="tag">检查点 PASS</span>
+                  <span>返回的ret</span>
+                </div>
+                <div class="case_step">
+                  <span class="tag">第 2 步</span>
+                  <span>检查系统数据</span>
+                </div>
+                <div class="info">列出客户</div>
+                <div class="info">
+
+-------- HTTP response * begin -------</div>
+                <div class="info">200</div>
+                <div class="info">Date: Wed, 12 Jan 2022 06:29:10 GMT</div>
+                <div class="info">Server: WSGIServer/0.2 CPython/3.7.5</div>
+                <div class="info">Content-Type: application/json</div>
+                <div class="info">X-Frame-Options: SAMEORIGIN</div>
+                <div class="info">Content-Length: 153</div>
+                <div class="info">Vary: Cookie</div>
+                <div class="info"></div>
+                <div class="info">{&quot;ret&quot;: 0, &quot;retlist&quot;: [{&quot;id&quot;: 158, &quot;name&quot;: &quot;武汉市桥西医院&quot;, &quot;phonenumber&quot;: &quot;13345679934&quot;, &quot;address&quot;: &quot;武汉市桥西医院北路&quot;}], &quot;total&quot;: 1}</div>
+                <div class="info">-------- HTTP response * end -------
+
+</div>
+                <div class="checkpoint_pass">
+                  <span class="tag">检查点 PASS</span>
+                  <span>返回的消息体数据正确</span>
+                </div>
+                <div class="case_step">
+                  <span class="tag">第 3 步</span>
+                  <span>修改客户</span>
+                </div>
+                <div class="info">修改客户</div>
+                <div class="info">
+
+-------- HTTP response * begin -------</div>
+                <div class="info">500</div>
+                <div class="info">Date: Wed, 12 Jan 2022 06:29:10 GMT</div>
+                <div class="info">Server: WSGIServer/0.2 CPython/3.7.5</div>
+                <div class="info">Content-Type: text/html</div>
+                <div class="info">X-Frame-Options: SAMEORIGIN</div>
+                <div class="info">Content-Length: 70766</div>
+                <div class="info">Vary: Cookie</div>
+                <div class="info"></div>
+                <div class="info">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
+  &lt;meta name=&quot;robots&quot; content=&quot;NONE,NOARCHIVE&quot;&gt;
+  &lt;title&gt;KeyError
+          at /api/mgr/customers&lt;/title&gt;
+  &lt;style type=&quot;text/css&quot;&gt;
+    html * { padding:0; margin:0; }
+    body * { padding:10px 20px; }
+    body * * { padding:0; }
+    body { font:small sans-serif; background-color:#fff; color:#000; }
+    body&gt;div { border-bottom:1px solid #ddd; }
+    h1 { font-weight:normal; }
+    h2 { margin-bottom:.8em; }
+    h3 { margin:1em 0 .5em 0; }
+    h4 { margin:0 0 .5em 0; font-weight: normal; }
+    code, pre { font-size: 100%; white-space: pre-wrap; }
+    table { border:1px solid #ccc; border-collapse: collapse; width:100%; background:white; }
+    tbody td, tbody th { vertical-align:top; padding:2px 3px; }
+    thead th {
+      padding:1px 6px 1px 3px; background:#fefefe; text-align:left;
+      font-weight:normal; font-size:11px; border:1px solid #ddd;
+    }
+    tbody th { width:12em; text-align:right; color:#666; padding-right:.5em; }
+    table.vars { margin:5px 0 2px 40px; }
+    table.vars td, table.req td { font-family:monospace; }
+    table td.code { width:100%; }
+    table td.code pre { overflow:hidden; }
+    table.source th { color:#666; }
+    table.source td { font-family:monospace; white-space:pre; border-bottom:1px solid #eee; }
+    ul.traceback { list-style-type:none; color: #222; }
+    ul.traceback li.frame { padding-bottom:1em; color:#4f4f4f; }
+    ul.traceback li.user { background-color:#e0e0e0; color:#000 }
+    div.context { padding:10px 0; overflow:hidden; }
+    div.context ol { padding-left:30px; margin:0 10px; list-style-position: inside; }
+    div.context ol li { font-family:monospace; white-space:pre; color:#777; cursor:pointer; padding-left: 2px; }
+    div.context ol li pre { display:inline; }
+    div.context ol.context-line li { color:#464646; background-color:#dfdfdf; padding: 3px 2px; }
+    div.context ol.context-line li span { position:absolute; right:32px; }
+    .user div.context ol.context-line li { background-color:#bbb; color:#000; }
+    .user div.context ol li { color:#666; }
+    div.commands { margin-left: 40px; }
+    div.commands a { color:#555; text-decoration:none; }
+    .user div.commands a { color: black; }
+    #summary { background: #ffc; }
+    #summary h2 { font-weight: normal; color: #666; }
+    #explanation { background:#eee; }
+    #template, #template-not-exist { background:#f6f6f6; }
+    #template-not-exist ul { margin: 0 0 10px 20px; }
+    #template-not-exist .postmortem-section { margin-bottom: 3px; }
+    #unicode-hint { background:#eee; }
+    #traceback { background:#eee; }
+    #requestinfo { background:#f6f6f6; padding-left:120px; }
+    #summary table { border:none; background:transparent; }
+    #requestinfo h2, #requestinfo h3 { position:relative; margin-left:-100px; }
+    #requestinfo h3 { margin-bottom:-1em; }
+    .error { background: #ffc; }
+    .specific { color:#cc3300; font-weight:bold; }
+    h2 span.commands { font-size:.7em; font-weight:normal; }
+    span.commands a:link {color:#5E5694;}
+    pre.exception_value { font-family: sans-serif; color: #575757; font-size: 1.5em; margin: 10px 0 10px 0; }
+    .append-bottom { margin-bottom: 10px; }
+  &lt;/style&gt;
+  
+  &lt;script type=&quot;text/javascript&quot;&gt;
+    function hideAll(elems) {
+      for (var e = 0; e &lt; elems.length; e++) {
+        elems[e].style.display = 'none';
+      }
+    }
+    window.onload = function() {
+      hideAll(document.querySelectorAll('table.vars'));
+      hideAll(document.querySelectorAll('ol.pre-context'));
+      hideAll(document.querySelectorAll('ol.post-context'));
+      hideAll(document.querySelectorAll('div.pastebin'));
+    }
+    function toggle() {
+      for (var i = 0; i &lt; arguments.length; i++) {
+        var e = document.getElementById(arguments[i]);
+        if (e) {
+          e.style.display = e.style.display == 'none' ? 'block': 'none';
+        }
+      }
+      return false;
+    }
+    function varToggle(link, id) {
+      toggle('v' + id);
+      var s = link.getElementsByTagName('span')[0];
+      var uarr = String.fromCharCode(0x25b6);
+      var darr = String.fromCharCode(0x25bc);
+      s.textContent = s.textContent == uarr ? darr : uarr;
+      return false;
+    }
+    function switchPastebinFriendly(link) {
+      s1 = &quot;Switch to copy-and-paste view&quot;;
+      s2 = &quot;Switch back to interactive view&quot;;
+      link.textContent = link.textContent.trim() == s1 ? s2: s1;
+      toggle('browserTraceback', 'pastebinTraceback');
+      return false;
+    }
+  &lt;/script&gt;
+  
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;summary&quot;&gt;
+  &lt;h1&gt;KeyError
+       at /api/mgr/customers&lt;/h1&gt;
+  &lt;pre class=&quot;exception_value&quot;&gt;&amp;#39;newdata&amp;#39;&lt;/pre&gt;
+  &lt;table class=&quot;meta&quot;&gt;
+
+    &lt;tr&gt;
+      &lt;th&gt;Request Method:&lt;/th&gt;
+      &lt;td&gt;POST&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Request URL:&lt;/th&gt;
+      &lt;td&gt;http://127.0.0.1/api/mgr/customers&lt;/td&gt;
+    &lt;/tr&gt;
+
+    &lt;tr&gt;
+      &lt;th&gt;Django Version:&lt;/th&gt;
+      &lt;td&gt;2.2.4&lt;/td&gt;
+    &lt;/tr&gt;
+
+    &lt;tr&gt;
+      &lt;th&gt;Exception Type:&lt;/th&gt;
+      &lt;td&gt;KeyError&lt;/td&gt;
+    &lt;/tr&gt;
+
+
+    &lt;tr&gt;
+      &lt;th&gt;Exception Value:&lt;/th&gt;
+      &lt;td&gt;&lt;pre&gt;&amp;#39;newdata&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+
+
+    &lt;tr&gt;
+      &lt;th&gt;Exception Location:&lt;/th&gt;
+      &lt;td&gt;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\mgr\customer.py in modifycustomer, line 73&lt;/td&gt;
+    &lt;/tr&gt;
+
+    &lt;tr&gt;
+      &lt;th&gt;Python Executable:&lt;/th&gt;
+      &lt;td&gt;C:\offc\百度网盘资料\bysms\resource\python.exe&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Python Version:&lt;/th&gt;
+      &lt;td&gt;3.7.5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Python Path:&lt;/th&gt;
+      &lt;td&gt;&lt;pre&gt;[&amp;#39;C:\\offc\\百度网盘资料\\bysms\\resource&amp;#39;,
+ &amp;#39;C:\\offc\\百度网盘资料\\bysms\\resource\\python37.zip&amp;#39;,
+ &amp;#39;C:\\offc\\百度网盘资料\\bysms\\resource\\DLLs&amp;#39;,
+ &amp;#39;C:\\offc\\百度网盘资料\\bysms\\resource\\lib&amp;#39;,
+ &amp;#39;C:\\offc\\百度网盘资料\\bysms\\resource&amp;#39;,
+ &amp;#39;C:\\offc\\百度网盘资料\\bysms\\resource\\lib\\site-packages&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Server time:&lt;/th&gt;
+      &lt;td&gt;Wed, 12 Jan 2022 14:29:10 +0800&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/div&gt;
+
+
+
+
+&lt;div id=&quot;traceback&quot;&gt;
+  &lt;h2&gt;Traceback &lt;span class=&quot;commands&quot;&gt;&lt;a href=&quot;#&quot; onclick=&quot;return switchPastebinFriendly(this);&quot;&gt;
+    Switch to copy-and-paste view&lt;/a&gt;&lt;/span&gt;
+  &lt;/h2&gt;
+  &lt;div id=&quot;browserTraceback&quot;&gt;
+    &lt;ul class=&quot;traceback&quot;&gt;
+      
+        
+        &lt;li class=&quot;frame django&quot;&gt;
+          &lt;code&gt;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\django\core\handlers\exception.py&lt;/code&gt; in &lt;code&gt;inner&lt;/code&gt;
+
+          
+            &lt;div class=&quot;context&quot; id=&quot;c91342168&quot;&gt;
+              
+                &lt;ol start=&quot;27&quot; class=&quot;pre-context&quot; id=&quot;pre91342168&quot;&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;    This decorator is automatically applied to all middleware to ensure that&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;    no middleware leaks an exception and that the next middleware in the stack&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;    can rely on getting a response instead of an exception.&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;    @wraps(get_response)&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;    def inner(request):&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;        try:&lt;/pre&gt;&lt;/li&gt;
+                
+                &lt;/ol&gt;
+              
+              &lt;ol start=&quot;34&quot; class=&quot;context-line&quot;&gt;
+                &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;            response = get_response(request)&lt;/pre&gt; &lt;span&gt;…&lt;/span&gt;&lt;/li&gt;
+              &lt;/ol&gt;
+              
+                &lt;ol start='35' class=&quot;post-context&quot; id=&quot;post91342168&quot;&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;        except Exception as exc:&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;            response = response_for_exception(request, exc)&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;        return response&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;    return inner&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342168', 'post91342168')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                  
+              &lt;/ol&gt;
+              
+            &lt;/div&gt;
+          
+
+          
+            &lt;div class=&quot;commands&quot;&gt;
+                
+                    &lt;a href=&quot;#&quot; onclick=&quot;return varToggle(this, '91342168')&quot;&gt;&lt;span&gt;&amp;#x25b6;&lt;/span&gt; Local vars&lt;/a&gt;
+                
+            &lt;/div&gt;
+            &lt;table class=&quot;vars&quot; id=&quot;v91342168&quot;&gt;
+              &lt;thead&gt;
+                &lt;tr&gt;
+                  &lt;th&gt;Variable&lt;/th&gt;
+                  &lt;th&gt;Value&lt;/th&gt;
+                &lt;/tr&gt;
+              &lt;/thead&gt;
+              &lt;tbody&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;exc&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;KeyError(&amp;#39;newdata&amp;#39;)&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;get_response&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;bound method BaseHandler._get_response of &amp;lt;django.core.handlers.wsgi.WSGIHandler object at 0x036836B0&amp;gt;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;request&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;WSGIRequest: POST &amp;#39;/api/mgr/customers&amp;#39;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+              &lt;/tbody&gt;
+            &lt;/table&gt;
+          
+        &lt;/li&gt;
+      
+        
+        &lt;li class=&quot;frame django&quot;&gt;
+          &lt;code&gt;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\django\core\handlers\base.py&lt;/code&gt; in &lt;code&gt;_get_response&lt;/code&gt;
+
+          
+            &lt;div class=&quot;context&quot; id=&quot;c91344848&quot;&gt;
+              
+                &lt;ol start=&quot;108&quot; class=&quot;pre-context&quot; id=&quot;pre91344848&quot;&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;                break&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;        if response is None:&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;            wrapped_callback = self.make_view_atomic(callback)&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;            try:&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;                response = wrapped_callback(request, *callback_args, **callback_kwargs)&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;            except Exception as e:&lt;/pre&gt;&lt;/li&gt;
+                
+                &lt;/ol&gt;
+              
+              &lt;ol start=&quot;115&quot; class=&quot;context-line&quot;&gt;
+                &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;                response = self.process_exception_by_middleware(e, request)&lt;/pre&gt; &lt;span&gt;…&lt;/span&gt;&lt;/li&gt;
+              &lt;/ol&gt;
+              
+                &lt;ol start='116' class=&quot;post-context&quot; id=&quot;post91344848&quot;&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;        # Complain if the view returned None (a common error).&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;        if response is None:&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;            if isinstance(callback, types.FunctionType):    # FBV&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;                view_name = callback.__name__&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91344848', 'post91344848')&quot;&gt;&lt;pre&gt;            else:                                           # CBV&lt;/pre&gt;&lt;/li&gt;
+                  
+              &lt;/ol&gt;
+              
+            &lt;/div&gt;
+          
+
+          
+            &lt;div class=&quot;commands&quot;&gt;
+                
+                    &lt;a href=&quot;#&quot; onclick=&quot;return varToggle(this, '91344848')&quot;&gt;&lt;span&gt;&amp;#x25b6;&lt;/span&gt; Local vars&lt;/a&gt;
+                
+            &lt;/div&gt;
+            &lt;table class=&quot;vars&quot; id=&quot;v91344848&quot;&gt;
+              &lt;thead&gt;
+                &lt;tr&gt;
+                  &lt;th&gt;Variable&lt;/th&gt;
+                  &lt;th&gt;Value&lt;/th&gt;
+                &lt;/tr&gt;
+              &lt;/thead&gt;
+              &lt;tbody&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;callback&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;function dispatcher at 0x03DDF108&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;callback_args&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;()&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;callback_kwargs&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;{}&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;request&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;WSGIRequest: POST &amp;#39;/api/mgr/customers&amp;#39;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;resolver&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;URLResolver &amp;#39;bysms.urls&amp;#39; (None:None) &amp;#39;^/&amp;#39;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;resolver_match&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;ResolverMatch(func=mgr.customer.dispatcher, args=(), kwargs={}, url_name=None, app_names=[], namespaces=[], route=api/mgr/customers)&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;response&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;self&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;django.core.handlers.wsgi.WSGIHandler object at 0x036836B0&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;wrapped_callback&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;function dispatcher at 0x03DDF108&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+              &lt;/tbody&gt;
+            &lt;/table&gt;
+          
+        &lt;/li&gt;
+      
+        
+        &lt;li class=&quot;frame django&quot;&gt;
+          &lt;code&gt;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\django\core\handlers\base.py&lt;/code&gt; in &lt;code&gt;_get_response&lt;/code&gt;
+
+          
+            &lt;div class=&quot;context&quot; id=&quot;c91342568&quot;&gt;
+              
+                &lt;ol start=&quot;106&quot; class=&quot;pre-context&quot; id=&quot;pre91342568&quot;&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;            response = middleware_method(request, callback, callback_args, callback_kwargs)&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;            if response:&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;                break&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;        if response is None:&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;            wrapped_callback = self.make_view_atomic(callback)&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;            try:&lt;/pre&gt;&lt;/li&gt;
+                
+                &lt;/ol&gt;
+              
+              &lt;ol start=&quot;113&quot; class=&quot;context-line&quot;&gt;
+                &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;                response = wrapped_callback(request, *callback_args, **callback_kwargs)&lt;/pre&gt; &lt;span&gt;…&lt;/span&gt;&lt;/li&gt;
+              &lt;/ol&gt;
+              
+                &lt;ol start='114' class=&quot;post-context&quot; id=&quot;post91342568&quot;&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;            except Exception as e:&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;                response = self.process_exception_by_middleware(e, request)&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;        # Complain if the view returned None (a common error).&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;        if response is None:&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342568', 'post91342568')&quot;&gt;&lt;pre&gt;            if isinstance(callback, types.FunctionType):    # FBV&lt;/pre&gt;&lt;/li&gt;
+                  
+              &lt;/ol&gt;
+              
+            &lt;/div&gt;
+          
+
+          
+            &lt;div class=&quot;commands&quot;&gt;
+                
+                    &lt;a href=&quot;#&quot; onclick=&quot;return varToggle(this, '91342568')&quot;&gt;&lt;span&gt;&amp;#x25b6;&lt;/span&gt; Local vars&lt;/a&gt;
+                
+            &lt;/div&gt;
+            &lt;table class=&quot;vars&quot; id=&quot;v91342568&quot;&gt;
+              &lt;thead&gt;
+                &lt;tr&gt;
+                  &lt;th&gt;Variable&lt;/th&gt;
+                  &lt;th&gt;Value&lt;/th&gt;
+                &lt;/tr&gt;
+              &lt;/thead&gt;
+              &lt;tbody&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;callback&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;function dispatcher at 0x03DDF108&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;callback_args&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;()&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;callback_kwargs&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;{}&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;request&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;WSGIRequest: POST &amp;#39;/api/mgr/customers&amp;#39;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;resolver&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;URLResolver &amp;#39;bysms.urls&amp;#39; (None:None) &amp;#39;^/&amp;#39;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;resolver_match&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;ResolverMatch(func=mgr.customer.dispatcher, args=(), kwargs={}, url_name=None, app_names=[], namespaces=[], route=api/mgr/customers)&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;response&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;self&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;django.core.handlers.wsgi.WSGIHandler object at 0x036836B0&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;wrapped_callback&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;function dispatcher at 0x03DDF108&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+              &lt;/tbody&gt;
+            &lt;/table&gt;
+          
+        &lt;/li&gt;
+      
+        
+        &lt;li class=&quot;frame user&quot;&gt;
+          &lt;code&gt;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\mgr\customer.py&lt;/code&gt; in &lt;code&gt;dispatcher&lt;/code&gt;
+
+          
+            &lt;div class=&quot;context&quot; id=&quot;c91341128&quot;&gt;
+              
+                &lt;ol start=&quot;119&quot; class=&quot;pre-context&quot; id=&quot;pre91341128&quot;&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341128', 'post91341128')&quot;&gt;&lt;pre&gt;    &amp;#39;list_customer&amp;#39;: listcustomers,&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341128', 'post91341128')&quot;&gt;&lt;pre&gt;    &amp;#39;add_customer&amp;#39;: addcustomer,&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341128', 'post91341128')&quot;&gt;&lt;pre&gt;    &amp;#39;modify_customer&amp;#39;: modifycustomer,&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341128', 'post91341128')&quot;&gt;&lt;pre&gt;    &amp;#39;del_customer&amp;#39;: deletecustomer,&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341128', 'post91341128')&quot;&gt;&lt;pre&gt;}&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341128', 'post91341128')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341128', 'post91341128')&quot;&gt;&lt;pre&gt;def dispatcher(request):&lt;/pre&gt;&lt;/li&gt;
+                
+                &lt;/ol&gt;
+              
+              &lt;ol start=&quot;126&quot; class=&quot;context-line&quot;&gt;
+                &lt;li onclick=&quot;toggle('pre91341128', 'post91341128')&quot;&gt;&lt;pre&gt;    return dispatcherBase(request, Action2Handler)&lt;/pre&gt; &lt;span&gt;…&lt;/span&gt;&lt;/li&gt;
+              &lt;/ol&gt;
+              
+            &lt;/div&gt;
+          
+
+          
+            &lt;div class=&quot;commands&quot;&gt;
+                
+                    &lt;a href=&quot;#&quot; onclick=&quot;return varToggle(this, '91341128')&quot;&gt;&lt;span&gt;&amp;#x25b6;&lt;/span&gt; Local vars&lt;/a&gt;
+                
+            &lt;/div&gt;
+            &lt;table class=&quot;vars&quot; id=&quot;v91341128&quot;&gt;
+              &lt;thead&gt;
+                &lt;tr&gt;
+                  &lt;th&gt;Variable&lt;/th&gt;
+                  &lt;th&gt;Value&lt;/th&gt;
+                &lt;/tr&gt;
+              &lt;/thead&gt;
+              &lt;tbody&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;request&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;WSGIRequest: POST &amp;#39;/api/mgr/customers&amp;#39;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+              &lt;/tbody&gt;
+            &lt;/table&gt;
+          
+        &lt;/li&gt;
+      
+        
+        &lt;li class=&quot;frame user&quot;&gt;
+          &lt;code&gt;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\lib\handler.py&lt;/code&gt; in &lt;code&gt;dispatcherBase&lt;/code&gt;
+
+          
+            &lt;div class=&quot;context&quot; id=&quot;c91341328&quot;&gt;
+              
+                &lt;ol start=&quot;31&quot; class=&quot;pre-context&quot; id=&quot;pre91341328&quot;&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;        request.params = json.loads(request.body)&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;    # 根据不同的action分派给不同的函数进行处理&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;    action = request.params[&amp;#39;action&amp;#39;]&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;    if action in action2HandlerTable:&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;        handlerFunc = action2HandlerTable[action]&lt;/pre&gt;&lt;/li&gt;
+                
+                &lt;/ol&gt;
+              
+              &lt;ol start=&quot;38&quot; class=&quot;context-line&quot;&gt;
+                &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;        return handlerFunc(request)&lt;/pre&gt; &lt;span&gt;…&lt;/span&gt;&lt;/li&gt;
+              &lt;/ol&gt;
+              
+                &lt;ol start='39' class=&quot;post-context&quot; id=&quot;post91341328&quot;&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;    else:&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91341328', 'post91341328')&quot;&gt;&lt;pre&gt;        return JsonResponse({&amp;#39;ret&amp;#39;: 1, &amp;#39;msg&amp;#39;: &amp;#39;action参数错误&amp;#39;})&lt;/pre&gt;&lt;/li&gt;
+                  
+              &lt;/ol&gt;
+              
+            &lt;/div&gt;
+          
+
+          
+            &lt;div class=&quot;commands&quot;&gt;
+                
+                    &lt;a href=&quot;#&quot; onclick=&quot;return varToggle(this, '91341328')&quot;&gt;&lt;span&gt;&amp;#x25b6;&lt;/span&gt; Local vars&lt;/a&gt;
+                
+            &lt;/div&gt;
+            &lt;table class=&quot;vars&quot; id=&quot;v91341328&quot;&gt;
+              &lt;thead&gt;
+                &lt;tr&gt;
+                  &lt;th&gt;Variable&lt;/th&gt;
+                  &lt;th&gt;Value&lt;/th&gt;
+                &lt;/tr&gt;
+              &lt;/thead&gt;
+              &lt;tbody&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;action&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;modify_customer&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;action2HandlerTable&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;{&amp;#39;add_customer&amp;#39;: &amp;lt;function addcustomer at 0x03DD9F60&amp;gt;,
+ &amp;#39;del_customer&amp;#39;: &amp;lt;function deletecustomer at 0x03DDF0C0&amp;gt;,
+ &amp;#39;list_customer&amp;#39;: &amp;lt;function listcustomers at 0x03DD9D20&amp;gt;,
+ &amp;#39;modify_customer&amp;#39;: &amp;lt;function modifycustomer at 0x03DDF030&amp;gt;}&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;handlerFunc&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;function modifycustomer at 0x03DDF030&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;request&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;WSGIRequest: POST &amp;#39;/api/mgr/customers&amp;#39;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+              &lt;/tbody&gt;
+            &lt;/table&gt;
+          
+        &lt;/li&gt;
+      
+        
+        &lt;li class=&quot;frame user&quot;&gt;
+          &lt;code&gt;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\mgr\customer.py&lt;/code&gt; in &lt;code&gt;modifycustomer&lt;/code&gt;
+
+          
+            &lt;div class=&quot;context&quot; id=&quot;c91342008&quot;&gt;
+              
+                &lt;ol start=&quot;66&quot; class=&quot;pre-context&quot; id=&quot;pre91342008&quot;&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;def modifycustomer(request):&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;    # 从请求消息中 获取修改客户的信息&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;    # 找到该客户，并且进行修改操作&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;    customerid = request.params[&amp;#39;id&amp;#39;]&lt;/pre&gt;&lt;/li&gt;
+                
+                &lt;/ol&gt;
+              
+              &lt;ol start=&quot;73&quot; class=&quot;context-line&quot;&gt;
+                &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;    newdata = request.params[&amp;#39;newdata&amp;#39;]&lt;/pre&gt; &lt;span&gt;…&lt;/span&gt;&lt;/li&gt;
+              &lt;/ol&gt;
+              
+                &lt;ol start='74' class=&quot;post-context&quot; id=&quot;post91342008&quot;&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;    try:&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;        # 根据 id 从数据库中找到相应的客户记录&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;        customer = Customer.objects.get(id=customerid)&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;    except Customer.DoesNotExist:&lt;/pre&gt;&lt;/li&gt;
+                  
+                  &lt;li onclick=&quot;toggle('pre91342008', 'post91342008')&quot;&gt;&lt;pre&gt;        return JsonResponse({&lt;/pre&gt;&lt;/li&gt;
+                  
+              &lt;/ol&gt;
+              
+            &lt;/div&gt;
+          
+
+          
+            &lt;div class=&quot;commands&quot;&gt;
+                
+                    &lt;a href=&quot;#&quot; onclick=&quot;return varToggle(this, '91342008')&quot;&gt;&lt;span&gt;&amp;#x25b6;&lt;/span&gt; Local vars&lt;/a&gt;
+                
+            &lt;/div&gt;
+            &lt;table class=&quot;vars&quot; id=&quot;v91342008&quot;&gt;
+              &lt;thead&gt;
+                &lt;tr&gt;
+                  &lt;th&gt;Variable&lt;/th&gt;
+                  &lt;th&gt;Value&lt;/th&gt;
+                &lt;/tr&gt;
+              &lt;/thead&gt;
+              &lt;tbody&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;customerid&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;158&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+                  &lt;tr&gt;
+                    &lt;td&gt;request&lt;/td&gt;
+                    &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;WSGIRequest: POST &amp;#39;/api/mgr/customers&amp;#39;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+                
+              &lt;/tbody&gt;
+            &lt;/table&gt;
+          
+        &lt;/li&gt;
+      
+    &lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;form action=&quot;http://dpaste.com/&quot; name=&quot;pasteform&quot; id=&quot;pasteform&quot; method=&quot;post&quot;&gt;
+
+  &lt;div id=&quot;pastebinTraceback&quot; class=&quot;pastebin&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;language&quot; value=&quot;PythonConsole&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;title&quot;
+      value=&quot;KeyError at /api/mgr/customers&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;source&quot; value=&quot;Django Dpaste Agent&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;poster&quot; value=&quot;Django&quot;&gt;
+    &lt;textarea name=&quot;content&quot; id=&quot;traceback_area&quot; cols=&quot;140&quot; rows=&quot;25&quot;&gt;
+Environment:
+
+
+Request Method: POST
+Request URL: http://127.0.0.1/api/mgr/customers
+
+Django Version: 2.2.4
+Python Version: 3.7.5
+Installed Applications:
+[&amp;#39;django.contrib.admin&amp;#39;,
+ &amp;#39;django.contrib.auth&amp;#39;,
+ &amp;#39;django.contrib.contenttypes&amp;#39;,
+ &amp;#39;django.contrib.sessions&amp;#39;,
+ &amp;#39;django.contrib.messages&amp;#39;,
+ &amp;#39;django.contrib.staticfiles&amp;#39;,
+ &amp;#39;common.apps.CommonConfig&amp;#39;]
+Installed Middleware:
+[&amp;#39;django.middleware.security.SecurityMiddleware&amp;#39;,
+ &amp;#39;django.contrib.sessions.middleware.SessionMiddleware&amp;#39;,
+ &amp;#39;django.middleware.common.CommonMiddleware&amp;#39;,
+ &amp;#39;django.contrib.auth.middleware.AuthenticationMiddleware&amp;#39;,
+ &amp;#39;django.contrib.messages.middleware.MessageMiddleware&amp;#39;,
+ &amp;#39;django.middleware.clickjacking.XFrameOptionsMiddleware&amp;#39;]
+
+
+
+Traceback:
+
+File &quot;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\django\core\handlers\exception.py&quot; in inner
+  34.             response = get_response(request)
+
+File &quot;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\django\core\handlers\base.py&quot; in _get_response
+  115.                 response = self.process_exception_by_middleware(e, request)
+
+File &quot;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\django\core\handlers\base.py&quot; in _get_response
+  113.                 response = wrapped_callback(request, *callback_args, **callback_kwargs)
+
+File &quot;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\mgr\customer.py&quot; in dispatcher
+  126.     return dispatcherBase(request, Action2Handler)
+
+File &quot;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\lib\handler.py&quot; in dispatcherBase
+  38.         return handlerFunc(request)
+
+File &quot;C:\offc\百度网盘资料\bysms\resource\lib\site-packages\mgr\customer.py&quot; in modifycustomer
+  73.     newdata = request.params[&amp;#39;newdata&amp;#39;]
+
+Exception Type: KeyError at /api/mgr/customers
+Exception Value: &amp;#39;newdata&amp;#39;
+&lt;/textarea&gt;
+  &lt;br&gt;&lt;br&gt;
+  &lt;input type=&quot;submit&quot; value=&quot;Share this traceback on a public website&quot;&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+&lt;/div&gt;
+
+
+
+&lt;div id=&quot;requestinfo&quot;&gt;
+  &lt;h2&gt;Request information&lt;/h2&gt;
+
+
+  
+    &lt;h3 id=&quot;user-info&quot;&gt;USER&lt;/h3&gt;
+    &lt;p&gt;byhy&lt;/p&gt;
+  
+
+  &lt;h3 id=&quot;get-info&quot;&gt;GET&lt;/h3&gt;
+  
+    &lt;p&gt;No GET data&lt;/p&gt;
+  
+
+  &lt;h3 id=&quot;post-info&quot;&gt;POST&lt;/h3&gt;
+  
+    &lt;p&gt;No POST data&lt;/p&gt;
+  
+  &lt;h3 id=&quot;files-info&quot;&gt;FILES&lt;/h3&gt;
+  
+    &lt;p&gt;No FILES data&lt;/p&gt;
+  
+
+
+  &lt;h3 id=&quot;cookie-info&quot;&gt;COOKIES&lt;/h3&gt;
+  
+    &lt;table class=&quot;req&quot;&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th&gt;Variable&lt;/th&gt;
+          &lt;th&gt;Value&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        
+          &lt;tr&gt;
+            &lt;td&gt;sessionid&lt;/td&gt;
+            &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;pdk0ik49s1tedlosu0ayqp067c4i2u3h&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+          &lt;/tr&gt;
+        
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  
+
+  &lt;h3 id=&quot;meta-info&quot;&gt;META&lt;/h3&gt;
+  &lt;table class=&quot;req&quot;&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Variable&lt;/th&gt;
+        &lt;th&gt;Value&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;ALLUSERSPROFILE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\ProgramData&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;APPDATA&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Users\\86150\\AppData\\Roaming&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CLASSPATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Program Files\\Java\\jdk-15.0.1&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;COMMONPROGRAMFILES&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Program Files (x86)\\Common Files&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;COMMONPROGRAMFILES(X86)&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Program Files (x86)\\Common Files&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;COMMONPROGRAMW6432&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Program Files\\Common Files&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;COMPUTERNAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;LAPTOP-29T4IPBI&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;COMSPEC&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\WINDOWS\\system32\\cmd.exe&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CONTENT_LENGTH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;163&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CONTENT_TYPE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;application/json&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DJANGO_SETTINGS_MODULE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;bysms.settings&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DRIVERDATA&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Windows\\System32\\Drivers\\DriverData&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FPS_BROWSER_APP_PROFILE_STRING&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;Internet Explorer&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FPS_BROWSER_USER_PROFILE_STRING&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;Default&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;GATEWAY_INTERFACE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;CGI/1.1&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;GOLAND&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\goland\\GoLand 2020.1\\bin;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;GOPATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Users\\86150\\go&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;GOPRIVATE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;example.com/org_name&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;GOPROXY&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;https://goproxy.cn,direct&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;GOROOT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Go\\&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;HOMEDRIVE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;HOMEPATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;\\Users\\86150&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;HTTP_ACCEPT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;*/*&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;HTTP_ACCEPT_ENCODING&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;gzip, deflate&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;HTTP_CONNECTION&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;keep-alive&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;HTTP_COOKIE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;sessionid=pdk0ik49s1tedlosu0ayqp067c4i2u3h&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;HTTP_HOST&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;127.0.0.1&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;HTTP_USER_AGENT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;python-requests/2.25.1&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;INCLUDE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\VC98\\atl\\include;C:\\VC98\\mfc\\include;C:\\VC98\\include&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;JAVA_HOME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Program Files\\Java\\jdk-15.0.1&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LIB&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\VC98\\mfc\\lib;C:\\VC98\\lib&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LOCALAPPDATA&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Users\\86150\\AppData\\Local&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LOGONSERVER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;\\\\LAPTOP-29T4IPBI&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;M2_HOME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\apache-maven-3.6.3&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;MSDEVDIR&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\c编制\\MSDev98&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;NUMBER_OF_PROCESSORS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;8&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;ONEDRIVE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Users\\86150\\OneDrive&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;ONEDRIVECONSUMER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Users\\86150\\OneDrive&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;OS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;Windows_NT&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;(&amp;#39;C:\\虚拟机\\bin\\;C:;Program Files\\Common &amp;#39;
+ &amp;#39;Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program &amp;#39;
+ &amp;#39;Files\\Java\\jdk-15.0.1\\bin;C:\\Go\\bin;C:\\Program Files &amp;#39;
+ &amp;#39;(x86)\\EasyShare\\x86\\;C:\\Program Files &amp;#39;
+ &amp;#39;(x86)\\EasyShare\\x64\\;C:\\apache-maven-3.6.3\\bin;C:\\Program &amp;#39;
+ &amp;#39;Files\\Microsoft SQL Server\\130\\Tools\\Binn\\;C:\\Program &amp;#39;
+ &amp;#39;Files\\Redis\\;tExtensions\\;C:\\Git\\cmd;C:\\Git\\新建文件夹\\;C:\\Users\\86150\\AppData\\Local\\Programs\\Python\\Python38\\Scripts\\;C:\\Users\\86150\\AppData\\Local\\Programs\\Python\\Python38\\;C:\\c编制\\Tools\\WinNT;C:\\c编制\\MSDev98\\Bin;C:\\c编制\\Tools;C:\\VC98\\bin;C:\\Users\\86150\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\86150\\go\\bin;C:\\goland\\GoLand &amp;#39;
+ &amp;#39;2020.1\\bin;;C:\\goland\\Microsoft VS Code\\bin;C:\\Program &amp;#39;
+ &amp;#39;Files\\Bandizip\\;C:\\Users\\86150\\AppData\\Roaming\\npm;C:\\新建文件夹 &amp;#39;
+ &amp;#39;(2)\\Fiddler&amp;#39;)&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PATHEXT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PATH_INFO&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;/api/mgr/customers&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROCESSOR_ARCHITECTURE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;x86&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROCESSOR_ARCHITEW6432&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;AMD64&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROCESSOR_IDENTIFIER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;AMD64 Family 23 Model 96 Stepping 1, AuthenticAMD&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROCESSOR_LEVEL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;23&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROCESSOR_REVISION&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;6001&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROGRAMDATA&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\ProgramData&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROGRAMFILES&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Program Files (x86)&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROGRAMFILES(X86)&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Program Files (x86)&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROGRAMW6432&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Program Files&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PROMPT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;$P$G&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PSMODULEPATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;(&amp;#39;C:\\Program &amp;#39;
+ &amp;#39;Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules&amp;#39;)&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PUBLIC&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Users\\Public&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;QUERY_STRING&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;REMOTE_ADDR&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;127.0.0.1&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;REMOTE_HOST&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;REQUEST_METHOD&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;POST&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SCRIPT_NAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SERVER_NAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;activate.navicat.com&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SERVER_PORT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;80&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SERVER_PROTOCOL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;HTTP/1.1&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SERVER_SOFTWARE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;WSGIServer/0.2&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSIONNAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;Console&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SYSTEMDRIVE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SYSTEMROOT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\WINDOWS&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;TEMP&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Users\\86150\\AppData\\Local\\Temp&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;TMP&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Users\\86150\\AppData\\Local\\Temp&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USERDOMAIN&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;LAPTOP-29T4IPBI&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USERDOMAIN_ROAMINGPROFILE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;LAPTOP-29T4IPBI&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USERNAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;86150&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USERPROFILE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\Users\\86150&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;WINDIR&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\WINDOWS&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;wsgi.errors&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;_io.TextIOWrapper name=&amp;#39;&amp;lt;stderr&amp;gt;&amp;#39; mode=&amp;#39;w&amp;#39; encoding=&amp;#39;utf-8&amp;#39;&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;wsgi.file_wrapper&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;wsgi.input&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;lt;django.core.handlers.wsgi.LimitedStream object at 0x0434B1B0&amp;gt;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;wsgi.multiprocess&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;wsgi.multithread&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;True&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;wsgi.run_once&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;wsgi.url_scheme&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;http&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;wsgi.version&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;(1, 0)&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+
+
+  &lt;h3 id=&quot;settings-info&quot;&gt;Settings&lt;/h3&gt;
+  &lt;h4&gt;Using settings module &lt;code&gt;bysms.settings&lt;/code&gt;&lt;/h4&gt;
+  &lt;table class=&quot;req&quot;&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Setting&lt;/th&gt;
+        &lt;th&gt;Value&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;ABSOLUTE_URL_OVERRIDES&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;{}&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;ADMINS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;ALLOWED_HOSTS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;192.168.1.100&amp;#39;, &amp;#39;localhost&amp;#39;, &amp;#39;127.0.0.1&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;APPEND_SLASH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;True&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;AUTHENTICATION_BACKENDS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;django.contrib.auth.backends.ModelBackend&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;AUTH_PASSWORD_VALIDATORS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;********************&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;AUTH_USER_MODEL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;auth.User&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;BASE_DIR&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;C:\\offc\\百度网盘资料\\bysms\\resource\\lib\\site-packages&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CACHES&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;{&amp;#39;default&amp;#39;: {&amp;#39;BACKEND&amp;#39;: &amp;#39;django.core.cache.backends.locmem.LocMemCache&amp;#39;}}&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CACHE_MIDDLEWARE_ALIAS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;default&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CACHE_MIDDLEWARE_KEY_PREFIX&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;********************&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CACHE_MIDDLEWARE_SECONDS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;600&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_COOKIE_AGE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;31449600&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_COOKIE_DOMAIN&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_COOKIE_HTTPONLY&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_COOKIE_NAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;csrftoken&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_COOKIE_PATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;/&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_COOKIE_SAMESITE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;Lax&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_COOKIE_SECURE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_FAILURE_VIEW&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.views.csrf.csrf_failure&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_HEADER_NAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;HTTP_X_CSRFTOKEN&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_TRUSTED_ORIGINS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;CSRF_USE_SESSIONS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DATABASES&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;{&amp;#39;default&amp;#39;: {&amp;#39;ATOMIC_REQUESTS&amp;#39;: False,
+             &amp;#39;AUTOCOMMIT&amp;#39;: True,
+             &amp;#39;CONN_MAX_AGE&amp;#39;: 0,
+             &amp;#39;ENGINE&amp;#39;: &amp;#39;django.db.backends.sqlite3&amp;#39;,
+             &amp;#39;HOST&amp;#39;: &amp;#39;&amp;#39;,
+             &amp;#39;NAME&amp;#39;: &amp;#39;db.sqlite3&amp;#39;,
+             &amp;#39;OPTIONS&amp;#39;: {},
+             &amp;#39;PASSWORD&amp;#39;: &amp;#39;********************&amp;#39;,
+             &amp;#39;PORT&amp;#39;: &amp;#39;&amp;#39;,
+             &amp;#39;TEST&amp;#39;: {&amp;#39;CHARSET&amp;#39;: None,
+                      &amp;#39;COLLATION&amp;#39;: None,
+                      &amp;#39;MIRROR&amp;#39;: None,
+                      &amp;#39;NAME&amp;#39;: None},
+             &amp;#39;TIME_ZONE&amp;#39;: None,
+             &amp;#39;USER&amp;#39;: &amp;#39;&amp;#39;}}&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DATABASE_ROUTERS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DATA_UPLOAD_MAX_MEMORY_SIZE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;2621440&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DATA_UPLOAD_MAX_NUMBER_FIELDS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;1000&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DATETIME_FORMAT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;N j, Y, P&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DATETIME_INPUT_FORMATS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;%Y-%m-%d %H:%M:%S&amp;#39;,
+ &amp;#39;%Y-%m-%d %H:%M:%S.%f&amp;#39;,
+ &amp;#39;%Y-%m-%d %H:%M&amp;#39;,
+ &amp;#39;%Y-%m-%d&amp;#39;,
+ &amp;#39;%m/%d/%Y %H:%M:%S&amp;#39;,
+ &amp;#39;%m/%d/%Y %H:%M:%S.%f&amp;#39;,
+ &amp;#39;%m/%d/%Y %H:%M&amp;#39;,
+ &amp;#39;%m/%d/%Y&amp;#39;,
+ &amp;#39;%m/%d/%y %H:%M:%S&amp;#39;,
+ &amp;#39;%m/%d/%y %H:%M:%S.%f&amp;#39;,
+ &amp;#39;%m/%d/%y %H:%M&amp;#39;,
+ &amp;#39;%m/%d/%y&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DATE_FORMAT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;N j, Y&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DATE_INPUT_FORMATS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;%Y-%m-%d&amp;#39;,
+ &amp;#39;%m/%d/%Y&amp;#39;,
+ &amp;#39;%m/%d/%y&amp;#39;,
+ &amp;#39;%b %d %Y&amp;#39;,
+ &amp;#39;%b %d, %Y&amp;#39;,
+ &amp;#39;%d %b %Y&amp;#39;,
+ &amp;#39;%d %b, %Y&amp;#39;,
+ &amp;#39;%B %d %Y&amp;#39;,
+ &amp;#39;%B %d, %Y&amp;#39;,
+ &amp;#39;%d %B %Y&amp;#39;,
+ &amp;#39;%d %B, %Y&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DEBUG&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;True&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DEBUG_PROPAGATE_EXCEPTIONS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DECIMAL_SEPARATOR&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;.&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DEFAULT_CHARSET&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;utf-8&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DEFAULT_CONTENT_TYPE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;text/html&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DEFAULT_EXCEPTION_REPORTER_FILTER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.views.debug.SafeExceptionReporterFilter&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DEFAULT_FILE_STORAGE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.core.files.storage.FileSystemStorage&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DEFAULT_FROM_EMAIL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;webmaster@localhost&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DEFAULT_INDEX_TABLESPACE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DEFAULT_TABLESPACE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;DISALLOWED_USER_AGENTS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_BACKEND&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.core.mail.backends.smtp.EmailBackend&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_HOST&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;localhost&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_HOST_PASSWORD&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;********************&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_HOST_USER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_PORT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;25&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_SSL_CERTFILE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_SSL_KEYFILE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;********************&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_SUBJECT_PREFIX&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;[Django] &amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_TIMEOUT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_USE_LOCALTIME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_USE_SSL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;EMAIL_USE_TLS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FILE_CHARSET&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;utf-8&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FILE_UPLOAD_DIRECTORY_PERMISSIONS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FILE_UPLOAD_HANDLERS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;django.core.files.uploadhandler.MemoryFileUploadHandler&amp;#39;,
+ &amp;#39;django.core.files.uploadhandler.TemporaryFileUploadHandler&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FILE_UPLOAD_MAX_MEMORY_SIZE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;2621440&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FILE_UPLOAD_PERMISSIONS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FILE_UPLOAD_TEMP_DIR&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FIRST_DAY_OF_WEEK&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;0&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FIXTURE_DIRS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FORCE_SCRIPT_NAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FORMAT_MODULE_PATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;FORM_RENDERER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.forms.renderers.DjangoTemplates&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;IGNORABLE_404_URLS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;INSTALLED_APPS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;django.contrib.admin&amp;#39;,
+ &amp;#39;django.contrib.auth&amp;#39;,
+ &amp;#39;django.contrib.contenttypes&amp;#39;,
+ &amp;#39;django.contrib.sessions&amp;#39;,
+ &amp;#39;django.contrib.messages&amp;#39;,
+ &amp;#39;django.contrib.staticfiles&amp;#39;,
+ &amp;#39;common.apps.CommonConfig&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;INTERNAL_IPS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LANGUAGES&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[(&amp;#39;af&amp;#39;, &amp;#39;Afrikaans&amp;#39;),
+ (&amp;#39;ar&amp;#39;, &amp;#39;Arabic&amp;#39;),
+ (&amp;#39;ast&amp;#39;, &amp;#39;Asturian&amp;#39;),
+ (&amp;#39;az&amp;#39;, &amp;#39;Azerbaijani&amp;#39;),
+ (&amp;#39;bg&amp;#39;, &amp;#39;Bulgarian&amp;#39;),
+ (&amp;#39;be&amp;#39;, &amp;#39;Belarusian&amp;#39;),
+ (&amp;#39;bn&amp;#39;, &amp;#39;Bengali&amp;#39;),
+ (&amp;#39;br&amp;#39;, &amp;#39;Breton&amp;#39;),
+ (&amp;#39;bs&amp;#39;, &amp;#39;Bosnian&amp;#39;),
+ (&amp;#39;ca&amp;#39;, &amp;#39;Catalan&amp;#39;),
+ (&amp;#39;cs&amp;#39;, &amp;#39;Czech&amp;#39;),
+ (&amp;#39;cy&amp;#39;, &amp;#39;Welsh&amp;#39;),
+ (&amp;#39;da&amp;#39;, &amp;#39;Danish&amp;#39;),
+ (&amp;#39;de&amp;#39;, &amp;#39;German&amp;#39;),
+ (&amp;#39;dsb&amp;#39;, &amp;#39;Lower Sorbian&amp;#39;),
+ (&amp;#39;el&amp;#39;, &amp;#39;Greek&amp;#39;),
+ (&amp;#39;en&amp;#39;, &amp;#39;English&amp;#39;),
+ (&amp;#39;en-au&amp;#39;, &amp;#39;Australian English&amp;#39;),
+ (&amp;#39;en-gb&amp;#39;, &amp;#39;British English&amp;#39;),
+ (&amp;#39;eo&amp;#39;, &amp;#39;Esperanto&amp;#39;),
+ (&amp;#39;es&amp;#39;, &amp;#39;Spanish&amp;#39;),
+ (&amp;#39;es-ar&amp;#39;, &amp;#39;Argentinian Spanish&amp;#39;),
+ (&amp;#39;es-co&amp;#39;, &amp;#39;Colombian Spanish&amp;#39;),
+ (&amp;#39;es-mx&amp;#39;, &amp;#39;Mexican Spanish&amp;#39;),
+ (&amp;#39;es-ni&amp;#39;, &amp;#39;Nicaraguan Spanish&amp;#39;),
+ (&amp;#39;es-ve&amp;#39;, &amp;#39;Venezuelan Spanish&amp;#39;),
+ (&amp;#39;et&amp;#39;, &amp;#39;Estonian&amp;#39;),
+ (&amp;#39;eu&amp;#39;, &amp;#39;Basque&amp;#39;),
+ (&amp;#39;fa&amp;#39;, &amp;#39;Persian&amp;#39;),
+ (&amp;#39;fi&amp;#39;, &amp;#39;Finnish&amp;#39;),
+ (&amp;#39;fr&amp;#39;, &amp;#39;French&amp;#39;),
+ (&amp;#39;fy&amp;#39;, &amp;#39;Frisian&amp;#39;),
+ (&amp;#39;ga&amp;#39;, &amp;#39;Irish&amp;#39;),
+ (&amp;#39;gd&amp;#39;, &amp;#39;Scottish Gaelic&amp;#39;),
+ (&amp;#39;gl&amp;#39;, &amp;#39;Galician&amp;#39;),
+ (&amp;#39;he&amp;#39;, &amp;#39;Hebrew&amp;#39;),
+ (&amp;#39;hi&amp;#39;, &amp;#39;Hindi&amp;#39;),
+ (&amp;#39;hr&amp;#39;, &amp;#39;Croatian&amp;#39;),
+ (&amp;#39;hsb&amp;#39;, &amp;#39;Upper Sorbian&amp;#39;),
+ (&amp;#39;hu&amp;#39;, &amp;#39;Hungarian&amp;#39;),
+ (&amp;#39;hy&amp;#39;, &amp;#39;Armenian&amp;#39;),
+ (&amp;#39;ia&amp;#39;, &amp;#39;Interlingua&amp;#39;),
+ (&amp;#39;id&amp;#39;, &amp;#39;Indonesian&amp;#39;),
+ (&amp;#39;io&amp;#39;, &amp;#39;Ido&amp;#39;),
+ (&amp;#39;is&amp;#39;, &amp;#39;Icelandic&amp;#39;),
+ (&amp;#39;it&amp;#39;, &amp;#39;Italian&amp;#39;),
+ (&amp;#39;ja&amp;#39;, &amp;#39;Japanese&amp;#39;),
+ (&amp;#39;ka&amp;#39;, &amp;#39;Georgian&amp;#39;),
+ (&amp;#39;kab&amp;#39;, &amp;#39;Kabyle&amp;#39;),
+ (&amp;#39;kk&amp;#39;, &amp;#39;Kazakh&amp;#39;),
+ (&amp;#39;km&amp;#39;, &amp;#39;Khmer&amp;#39;),
+ (&amp;#39;kn&amp;#39;, &amp;#39;Kannada&amp;#39;),
+ (&amp;#39;ko&amp;#39;, &amp;#39;Korean&amp;#39;),
+ (&amp;#39;lb&amp;#39;, &amp;#39;Luxembourgish&amp;#39;),
+ (&amp;#39;lt&amp;#39;, &amp;#39;Lithuanian&amp;#39;),
+ (&amp;#39;lv&amp;#39;, &amp;#39;Latvian&amp;#39;),
+ (&amp;#39;mk&amp;#39;, &amp;#39;Macedonian&amp;#39;),
+ (&amp;#39;ml&amp;#39;, &amp;#39;Malayalam&amp;#39;),
+ (&amp;#39;mn&amp;#39;, &amp;#39;Mongolian&amp;#39;),
+ (&amp;#39;mr&amp;#39;, &amp;#39;Marathi&amp;#39;),
+ (&amp;#39;my&amp;#39;, &amp;#39;Burmese&amp;#39;),
+ (&amp;#39;nb&amp;#39;, &amp;#39;Norwegian Bokmål&amp;#39;),
+ (&amp;#39;ne&amp;#39;, &amp;#39;Nepali&amp;#39;),
+ (&amp;#39;nl&amp;#39;, &amp;#39;Dutch&amp;#39;),
+ (&amp;#39;nn&amp;#39;, &amp;#39;Norwegian Nynorsk&amp;#39;),
+ (&amp;#39;os&amp;#39;, &amp;#39;Ossetic&amp;#39;),
+ (&amp;#39;pa&amp;#39;, &amp;#39;Punjabi&amp;#39;),
+ (&amp;#39;pl&amp;#39;, &amp;#39;Polish&amp;#39;),
+ (&amp;#39;pt&amp;#39;, &amp;#39;Portuguese&amp;#39;),
+ (&amp;#39;pt-br&amp;#39;, &amp;#39;Brazilian Portuguese&amp;#39;),
+ (&amp;#39;ro&amp;#39;, &amp;#39;Romanian&amp;#39;),
+ (&amp;#39;ru&amp;#39;, &amp;#39;Russian&amp;#39;),
+ (&amp;#39;sk&amp;#39;, &amp;#39;Slovak&amp;#39;),
+ (&amp;#39;sl&amp;#39;, &amp;#39;Slovenian&amp;#39;),
+ (&amp;#39;sq&amp;#39;, &amp;#39;Albanian&amp;#39;),
+ (&amp;#39;sr&amp;#39;, &amp;#39;Serbian&amp;#39;),
+ (&amp;#39;sr-latn&amp;#39;, &amp;#39;Serbian Latin&amp;#39;),
+ (&amp;#39;sv&amp;#39;, &amp;#39;Swedish&amp;#39;),
+ (&amp;#39;sw&amp;#39;, &amp;#39;Swahili&amp;#39;),
+ (&amp;#39;ta&amp;#39;, &amp;#39;Tamil&amp;#39;),
+ (&amp;#39;te&amp;#39;, &amp;#39;Telugu&amp;#39;),
+ (&amp;#39;th&amp;#39;, &amp;#39;Thai&amp;#39;),
+ (&amp;#39;tr&amp;#39;, &amp;#39;Turkish&amp;#39;),
+ (&amp;#39;tt&amp;#39;, &amp;#39;Tatar&amp;#39;),
+ (&amp;#39;udm&amp;#39;, &amp;#39;Udmurt&amp;#39;),
+ (&amp;#39;uk&amp;#39;, &amp;#39;Ukrainian&amp;#39;),
+ (&amp;#39;ur&amp;#39;, &amp;#39;Urdu&amp;#39;),
+ (&amp;#39;vi&amp;#39;, &amp;#39;Vietnamese&amp;#39;),
+ (&amp;#39;zh-hans&amp;#39;, &amp;#39;Simplified Chinese&amp;#39;),
+ (&amp;#39;zh-hant&amp;#39;, &amp;#39;Traditional Chinese&amp;#39;)]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LANGUAGES_BIDI&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;he&amp;#39;, &amp;#39;ar&amp;#39;, &amp;#39;fa&amp;#39;, &amp;#39;ur&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LANGUAGE_CODE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;en&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LANGUAGE_COOKIE_AGE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LANGUAGE_COOKIE_DOMAIN&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LANGUAGE_COOKIE_NAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django_language&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LANGUAGE_COOKIE_PATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;/&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LOCALE_PATHS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LOGGING&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;{}&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LOGGING_CONFIG&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;logging.config.dictConfig&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LOGIN_REDIRECT_URL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;/accounts/profile/&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LOGIN_URL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;/accounts/login/&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;LOGOUT_REDIRECT_URL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;MANAGERS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;MEDIA_ROOT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;MEDIA_URL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;MESSAGE_STORAGE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.contrib.messages.storage.fallback.FallbackStorage&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;MIDDLEWARE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;django.middleware.security.SecurityMiddleware&amp;#39;,
+ &amp;#39;django.contrib.sessions.middleware.SessionMiddleware&amp;#39;,
+ &amp;#39;django.middleware.common.CommonMiddleware&amp;#39;,
+ &amp;#39;django.contrib.auth.middleware.AuthenticationMiddleware&amp;#39;,
+ &amp;#39;django.contrib.messages.middleware.MessageMiddleware&amp;#39;,
+ &amp;#39;django.middleware.clickjacking.XFrameOptionsMiddleware&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;MIGRATION_MODULES&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;{}&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;MONTH_DAY_FORMAT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;F j&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;NUMBER_GROUPING&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;0&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PASSWORD_HASHERS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;********************&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PASSWORD_RESET_TIMEOUT_DAYS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;********************&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;PREPEND_WWW&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;ROOT_URLCONF&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;bysms.urls&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECRET_KEY&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;********************&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECURE_BROWSER_XSS_FILTER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECURE_CONTENT_TYPE_NOSNIFF&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECURE_HSTS_INCLUDE_SUBDOMAINS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECURE_HSTS_PRELOAD&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECURE_HSTS_SECONDS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;0&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECURE_PROXY_SSL_HEADER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECURE_REDIRECT_EXEMPT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECURE_SSL_HOST&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SECURE_SSL_REDIRECT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SERVER_EMAIL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;root@localhost&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_CACHE_ALIAS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;default&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_COOKIE_AGE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;1209600&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_COOKIE_DOMAIN&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_COOKIE_HTTPONLY&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;True&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_COOKIE_NAME&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;sessionid&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_COOKIE_PATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;/&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_COOKIE_SAMESITE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;Lax&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_COOKIE_SECURE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_ENGINE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.contrib.sessions.backends.db&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_EXPIRE_AT_BROWSER_CLOSE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_FILE_PATH&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_SAVE_EVERY_REQUEST&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SESSION_SERIALIZER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.contrib.sessions.serializers.JSONSerializer&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SETTINGS_MODULE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;bysms.settings&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SHORT_DATETIME_FORMAT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;m/d/Y P&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SHORT_DATE_FORMAT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;m/d/Y&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SIGNING_BACKEND&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.core.signing.TimestampSigner&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;SILENCED_SYSTEM_CHECKS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;STATICFILES_DIRS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;STATICFILES_FINDERS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;django.contrib.staticfiles.finders.FileSystemFinder&amp;#39;,
+ &amp;#39;django.contrib.staticfiles.finders.AppDirectoriesFinder&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;STATICFILES_STORAGE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.contrib.staticfiles.storage.StaticFilesStorage&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;STATIC_ROOT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;None&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;STATIC_URL&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;/static/&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;TEMPLATES&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[{&amp;#39;APP_DIRS&amp;#39;: True,
+  &amp;#39;BACKEND&amp;#39;: &amp;#39;django.template.backends.django.DjangoTemplates&amp;#39;,
+  &amp;#39;DIRS&amp;#39;: [],
+  &amp;#39;OPTIONS&amp;#39;: {&amp;#39;context_processors&amp;#39;: [&amp;#39;django.template.context_processors.debug&amp;#39;,
+                                     &amp;#39;django.template.context_processors.request&amp;#39;,
+                                     &amp;#39;django.contrib.auth.context_processors.auth&amp;#39;,
+                                     &amp;#39;django.contrib.messages.context_processors.messages&amp;#39;]}}]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;TEST_NON_SERIALIZED_APPS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;TEST_RUNNER&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;django.test.runner.DiscoverRunner&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;THOUSAND_SEPARATOR&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;,&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;TIME_FORMAT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;P&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;TIME_INPUT_FORMATS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;[&amp;#39;%H:%M:%S&amp;#39;, &amp;#39;%H:%M:%S.%f&amp;#39;, &amp;#39;%H:%M&amp;#39;]&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;TIME_ZONE&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;Asia/Shanghai&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USE_I18N&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;True&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USE_L10N&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;True&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USE_THOUSAND_SEPARATOR&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USE_TZ&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;True&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USE_X_FORWARDED_HOST&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;USE_X_FORWARDED_PORT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;False&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;WSGI_APPLICATION&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;bysms.wsgi.application&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;X_FRAME_OPTIONS&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;SAMEORIGIN&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+        &lt;tr&gt;
+          &lt;td&gt;YEAR_MONTH_FORMAT&lt;/td&gt;
+          &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&amp;#39;F Y&amp;#39;&lt;/pre&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+
+&lt;/div&gt;
+
+  &lt;div id=&quot;explanation&quot;&gt;
+    &lt;p&gt;
+      You're seeing this error because you have &lt;code&gt;DEBUG = True&lt;/code&gt; in your
+      Django settings file. Change that to &lt;code&gt;False&lt;/code&gt;, and Django will
+      display a standard page generated by the handler for this status code.
+    &lt;/p&gt;
+  &lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</div>
+                <div class="info">-------- HTTP response * end -------
+
+</div>
+                <div class="case_step">
+                  <span class="tag">第 4 步</span>
+                  <span>检查修改数据</span>
+                </div>
+                <div class="info">列出客户</div>
+                <div class="info">
+
+-------- HTTP response * begin -------</div>
+                <div class="info">200</div>
+                <div class="info">Date: Wed, 12 Jan 2022 06:29:10 GMT</div>
+                <div class="info">Server: WSGIServer/0.2 CPython/3.7.5</div>
+                <div class="info">Content-Type: application/json</div>
+                <div class="info">X-Frame-Options: SAMEORIGIN</div>
+                <div class="info">Content-Length: 153</div>
+                <div class="info">Vary: Cookie</div>
+                <div class="info"></div>
+                <div class="info">{&quot;ret&quot;: 0, &quot;retlist&quot;: [{&quot;id&quot;: 158, &quot;name&quot;: &quot;武汉市桥西医院&quot;, &quot;phonenumber&quot;: &quot;13345679934&quot;, &quot;address&quot;: &quot;武汉市桥西医院北路&quot;}], &quot;total&quot;: 1}</div>
+                <div class="info">-------- HTTP response * end -------
+
+</div>
+                <div class="checkpoint_fail">
+                  <span class="tag">检查点 FAIL</span>
+                  <span>返回的消息体数据正确</span>
+                </div>
+                <div class="info error-info"> 
+Traceback:
+  File &quot;cases\数据环境-空白\客户API\修改客户.py&quot;, line 70, in teststeps
+    CHECK_POINT('返回的消息体数据正确',</div>
+              </div>
+              <div class="case_teardown teardown case_st_lable" id="case_teardown teardown 添加客户 - API-0154">
+                <span class="label">用例清除</span>
+                <div class="info">删除客户</div>
+                <div class="info">
+
+-------- HTTP response * begin -------</div>
+                <div class="info">200</div>
+                <div class="info">Date: Wed, 12 Jan 2022 06:29:10 GMT</div>
+                <div class="info">Server: WSGIServer/0.2 CPython/3.7.5</div>
+                <div class="info">Content-Type: application/json</div>
+                <div class="info">X-Frame-Options: SAMEORIGIN</div>
+                <div class="info">Content-Length: 10</div>
+                <div class="info">Vary: Cookie</div>
+                <div class="info"></div>
+                <div class="info">{&quot;ret&quot;: 0}</div>
+                <div class="info">-------- HTTP response * end -------
+
+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="float_menu">
+        <div class="menu-item" onclick="document.querySelector(&quot;body&quot;).scrollIntoView()">页首</div>
+        <div class="menu-item" onclick="window.open(&quot;http://www.byhy.net/tut/auto/hytest/01&quot;, &quot;_blank&quot;); ">教程</div>
+        <div class="menu-item" id="display_mode" onclick="toggle_folder_all_cases()">精简</div>
+        <div class="error_jumper" display="block">
+          <div class="menu-item" onclick="previous_error()" title="上一个错误">∧</div>
+          <div class="menu-item" onclick="next_error()" title="下一个错误">∨</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

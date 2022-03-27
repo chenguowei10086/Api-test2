@@ -1,0 +1,138 @@
+
+
+  ========= 测试开始 : 20220320_231805 =========
+
+
+
+>>> cases\数据环境-空白\
+
+[ suite setup ] cases\数据环境-空白\
+删除客户、药品、订单
+
+
+-------- HTTP response * begin -------
+200
+Date: Sun, 20 Mar 2022 15:18:05 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 10
+Vary: Cookie
+Set-Cookie: sessionid=7pfvhzdvmepanxvrk9qqyq21sxbcuuws; expires=Sun, 03 Apr 2022 15:18:05 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax
+
+{"ret": 0}
+-------- HTTP response * end -------
+
+
+列出订单
+
+
+-------- HTTP response * begin -------
+200
+Date: Sun, 20 Mar 2022 15:18:05 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 37
+Vary: Cookie
+
+{"ret": 0, "retlist": [], "total": 0}
+-------- HTTP response * end -------
+
+
+列出客户
+
+
+-------- HTTP response * begin -------
+200
+Date: Sun, 20 Mar 2022 15:18:05 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 37
+Vary: Cookie
+
+{"ret": 0, "retlist": [], "total": 0}
+-------- HTTP response * end -------
+
+
+列出药品
+
+
+-------- HTTP response * begin -------
+200
+Date: Sun, 20 Mar 2022 15:18:05 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 37
+Vary: Cookie
+
+{"ret": 0, "retlist": [], "total": 0}
+-------- HTTP response * end -------
+
+
+
+
+>>> cases\数据环境-空白\客户API\添加客户.py
+
+* 添加客户 - API-0151  -  2022-03-20 23:18:05
+
+  [ case execution steps ]
+
+-- 第 1 步 -- 添加一个客户 
+
+添加客户
+
+
+-------- HTTP response * begin -------
+200
+Date: Sun, 20 Mar 2022 15:18:05 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 20
+Vary: Cookie
+
+{"ret": 0, "id": 43}
+-------- HTTP response * end -------
+
+
+
+** 检查点 **  返回的ret值=0 ---->  通过
+
+
+-- 第 2 步 -- 检查系统数据 
+
+列出客户
+
+
+-------- HTTP response * begin -------
+200
+Date: Sun, 20 Mar 2022 15:18:16 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 152
+Vary: Cookie
+
+{"ret": 0, "retlist": [{"id": 43, "name": "武汉市桥西医院", "phonenumber": "13345679934", "address": "武汉市桥西医院北路"}], "total": 1}
+-------- HTTP response * end -------
+
+
+
+** 检查点 **  返回的消息体数据正确 ---->  通过
+
+  PASS 
+
+[ case teardown ] 添加客户 - API-0151
+删除客户
+
+
+-------- HTTP response * begin -------
+200
+Date: Sun, 20 Mar 2022 15:18:28 GMT
+Server: WSGIServer/0.2 CPython/3.7.5
+Content-Type: application/json
+X-Frame-Options: SAMEORIGIN
+Content-Length: 10
